@@ -1,0 +1,102 @@
+# IoC/DI (2) - 스프링 없이, 생성자를 통한 의존성 주입
+## 스프링 없이 의존성 주입하기 1 - 생성자를 통한 의존성 주입
+
+```
+// 의사 코드
+운전자가 자동차를 생산한다.
+운전자가 자동차를 생산하면서 타이어를 장착한다.
+```
+
+```java
+// 자바로 표현
+Tire tire = new Tire();
+**Car car = new Car(tire);**
+```
+
+### 주입이란?
+
+- 주입이라는 말은 **외부에서라는 뜻을 내포하고** 있는 단어
+- 결국 자동차 내부에서 타이어를 생산하는 것이 아니라
+    - **외부에서 생산된 타이어를 자동차에 장착**하는 작업이 **주입**
+
+<img width="300" alt="Screenshot 2023-04-21 at 10 41 41 PM" src="https://user-images.githubusercontent.com/102847513/233650926-6214f205-72e5-49e5-8b94-8e37112a505f.png">
+<img width="400" alt="Screenshot 2023-04-21 at 10 41 54 PM" src="https://user-images.githubusercontent.com/102847513/233650980-30456891-dd7a-46fa-a95d-92032fa24602.png">
+
+
+- 첫번째 다이어그램과 비교하면
+    - Car의 생성자에 인자가 생김
+
+> 클래스 다이어그램과 시퀸스 다이어그램을 함께 가장 많이 사용하는 이유?
+> 
+
+```java
+public class Car() {
+	Tire tire;	
+	
+	**public Car(Tire tire) {
+		this.tire = trie;
+	} // 이전 코드와 달라진 부분**
+
+	public String getTireBrand(Tire tire){
+		return "장착된 타이어: " + tire.getBrand();
+	}
+}
+```
+
+- new가 사라지고 생성자에 인자가 추가됨
+
+```java
+public class Driver {
+	public static void main(String[] args){
+		**Tire tire = new KoreanTire();
+		Car car = new Car(tire);**
+		System.out.println(car.getTireBrand());
+	}
+}
+```
+
+- new를 통해 타이어를 생산하는 부분이 Car.java에서 Driver.java로 이동
+- 생산된 tire 객체 참조 변수를 Car 생성자의 인자로 전달
+
+### 테스트 코드
+
+```java
+public class CarTest { 
+	@Test
+	public void 자동차.코리아타이어_장착_타이어브랜드.테스트() {
+	  Tire tirel = new KoreaTire();
+		Car car1 = new Car(tire1);
+	
+		assert Equals("장착된타이어: 코리아타이어,car1.getTireBrand());
+	}
+	
+	@Test
+	public void 자동차_미국타이어_장착_타이어브랜드_테스트 () {
+		Tire tire2 = new AmericaTire();
+		Car car2 = new Car(tire2);
+
+		assertEquals("장착된타이어: 미국타이어, car2.getTireBrand());
+	}
+} 
+```
+
+### 이 방식의 코드 작성, 이점은?
+
+- 기존 방식에서는 Car는 KoreaTire, AmnericaTire에 대해 **정확히 알고있어야만**
+    - 그에해당하는 객체를 생성 가능
+- 의존성 주입을 적용할 경우
+    - Car은 그저 Tire 인터페이스를 **구현한 어떤 객체가 들어오기만 하면** 정상적으로 작동
+    - 확장성도 향상, 나중에 어떤 새로운 타이어 브랜드가 생겨도
+        - 각 타이어 브랜드들이 Tire 인터페이스를 구현한다면
+        - Car.java 코드를 변경할 필요없이 사용할 수 있기때문
+
+> 여기서는 사실 디자인 패턴의 꽃이라고 하는 전략패턴을 응용
+> 
+> - 전략패턴의 3요소인 클라이언트, 전략, 컨텍스트에 해당하는 요소는?
+>     - 힌트- 전략패턴의3요소
+>         - 전략 메서드를 가진 전략 객체
+>         - 전략 객체를 사용하는 컨텍스트
+>         - 전략 객체를 생성해 컨텍스트에 주입하는 클라이언트(제3자)
+>     - 전략: Tire를 구현한 KoreaTire, AmericaTire
+>     - 컨텍스트 : Car의 geTireBrand() 메서드
+>     - 클라이언트 : Driver의 main() 메서드
