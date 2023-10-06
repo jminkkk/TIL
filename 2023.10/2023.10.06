@@ -1,0 +1,15 @@
+BasicAuthenticationFilter, OncePerRequestFilter
+# BasicAuthenticationFilter
+GenericFilterBean를 사용해서 시큐리티 구현
+-> 인증이 필요하지 않은 경로에도 확인함
+## BasicAuthenticationFilter란?
+BasicAuthenticationFilter는 인증, 인가가 필요한 요청에만 동작하고 그 외에는 동작하지 않음
+
+BasicAuthenticationFilter를 상속한 후 doFilterInternal를 구현
+
+### 문제점
+로그를 찍어보니 doFilterInternal가 실행되지 않고 401이 뜸
+
+SpringSecurityConfiguration가 문제인지 BasicAuthenticationFilter를 구현한 구현체가 문제인지 모르겠음
+
+더 공부해봐야 할듯....
